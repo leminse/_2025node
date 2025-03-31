@@ -1,14 +1,16 @@
 const express = require('express');
 const path = require('path');
 const mysql = require('mysql2');
+const dotenv = require('dotenv');
 
+dotenv.config();
 const app = express();
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '0000',
-    database: "traveldb"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 travelList = ['뉴욕', '파리', '서울', '도쿄'];
