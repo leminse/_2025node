@@ -2,14 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>여행</title>
+    <title>여행가자</title>
 </head>
 <body>
     <h1>여행지 목록</h1>
     <ui>
         <% travelList.forEach(travel => { %>
-            <li><%= travel %></li>
-        <%})%>
+            <li> 
+                <a href="/travel/<%= travel.id %>"> <%= travel.name %> </a>
+            </li>
+        <% }) %>
     </ui>
 </body>
 </html>
