@@ -2,9 +2,12 @@ const express = require('express');
 const path = require('path');
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
+const { read } = require('fs');
 
 dotenv.config();
 const app = express();
+
+travelList = ['뉴욕', '파리', '서울', '도쿄']
 
 //.env로 민감한 데이터 이동
 const db = mysql.createConnection({
@@ -14,7 +17,8 @@ const db = mysql.createConnection({
   database : process.env.DB_NAME
 });
 
-travelList = ['뉴욕', '파리', '서울', '도쿄']
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 app.set('view engine', 'ejs');
 // _difname : 현재 파일이 속한 절대 경로
@@ -34,8 +38,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/travel', (req, res) => {
-  const query = 'SELECT id, name FROM travellist';
-  db.query(query, (err, results) => {
+  const _query = 'SELECT id, name FROM travellist';
+  db.query(_query, (err, results) => {
     if(err) {
       console.error('데이터베이스 쿼리 실패');
       res.status(500).send('Internal Server Error');
@@ -45,6 +49,7 @@ app.get('/travel', (req, res) => {
     res.render('travel', {travelList});
   });
 });
+
 app.get('/travel/:id', (req, res) => {
   const travelID = req.params.id;
   const query = 'SELECT * FROM travellist WHERE id =?';
@@ -60,8 +65,25 @@ app.get('/travel/:id', (req, res) => {
     }
     const travel = results[0];
     res.render('travelDetail', {travel});
-  }) 
-})
+  }); 
+});
+
+app.post('/travel', (req, res) => {
+  const {name} = req.body;
+  const _query = 'INSERT INTO travellist (name) VALUES (?)';
+  db.query(_query, (err, [name], results) => {
+    if(err) {
+      console.error('데이터베이스 쿼리 실패');
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.redirect('/travel');
+  });
+});
+
+app.get('/add-traverl', (req, res) => {
+  res.render('addTravel');
+});
 
 //use : 모든 method에 대해, 경로가 없으면? : 모든 경로에 대해
 app.use((req, res) => {
